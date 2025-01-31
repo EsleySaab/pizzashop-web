@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { useMutation } from "@tanstack/react-query";
+import { signIn } from "../../api/sign-in";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -17,15 +19,23 @@ export function SignIn() {
 
   type SignInForm = z.infer<typeof signInForm>;
 
+  type SignInBody = z.infer<typeof signInForm>;
+
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<SignInForm>();
 
+  const { mutateAsync: authenticate } = useMutation<unknown, Error, SignInBody>(
+    {
+      mutationFn: signIn,
+    },
+  );
+
   async function handleSignIn(data: SignInForm) {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await authenticate({ email: data.email });
 
       toast.success("Enviamos um link de autenticação para o seu e-mail.", {
         action: {
