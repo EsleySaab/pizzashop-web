@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 
@@ -13,6 +13,8 @@ import { signIn } from "../../api/sign-in";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export function SignIn() {
+  const [searchParams] = useSearchParams();
+
   const signInForm = z.object({
     email: z.string().email(),
   });
@@ -25,7 +27,11 @@ export function SignIn() {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<SignInForm>();
+  } = useForm<SignInForm>({
+    defaultValues: {
+      email: searchParams.get("email") ?? "",
+    },
+  });
 
   const { mutateAsync: authenticate } = useMutation<unknown, Error, SignInBody>(
     {
